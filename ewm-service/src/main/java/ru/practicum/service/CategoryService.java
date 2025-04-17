@@ -63,7 +63,7 @@ public class CategoryService {
 
     public CategoryDto updateCategory(int id, CategoryDto categoryDto) {
         validateCategory(id);
-        if (categoryDto.getName()!= null
+        if (categoryDto.getName() != null
             && categoryDto.getName().length() > 50) {
             throw new BadRequestException("Category name cannot be greater than 50. It is: " + categoryDto.getName().length());
         }

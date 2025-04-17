@@ -31,7 +31,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class EventService {
-    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final EventRepository eventRepository;
     private final UserService userService;
     private final CategoryService categoryService;

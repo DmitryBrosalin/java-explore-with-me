@@ -6,7 +6,8 @@ import ru.practicum.model.dto.RequestDto;
 import java.time.format.DateTimeFormatter;
 
 public class RequestMapper {
-    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public static RequestDto toRequestDto(Request request) {
         return RequestDto.builder()
                 .id(request.getId())
