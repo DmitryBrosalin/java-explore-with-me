@@ -13,14 +13,14 @@ public class StatsClient {
     private final RestTemplate rest = new RestTemplate();
 
     public ResponseEntity<Object> postHit(HitDto hitDto) {
-        return makeAndSendRequest(HttpMethod.POST, "http://localhost:9090/hit", hitDto);
+        return makeAndSendRequest(HttpMethod.POST, "http://stats-server:9090/hit", hitDto);
     }
 
     public ResponseEntity<Object> getStats(String start,
                                            String end,
                                            List<String> uris,
                                            Boolean unique) {
-        StringBuilder path = new StringBuilder("http://localhost:9090/stats?start=" + start + "&end=" + end);
+        StringBuilder path = new StringBuilder("http://stats-server:9090/stats?start=" + start + "&end=" + end);
         if (uris != null) {
             for (String uri : uris) {
                 path.append("&uri=").append(uri);
