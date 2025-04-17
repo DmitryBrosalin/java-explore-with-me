@@ -1,17 +1,12 @@
 package ru.practicum;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-import ru.practicum.HitDto;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class StatsClient {
