@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ErrorHandler {
-    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
