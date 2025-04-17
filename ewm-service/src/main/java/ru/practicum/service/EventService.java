@@ -32,6 +32,14 @@ import java.util.*;
 @RequiredArgsConstructor
 public class EventService {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final int MIN_DESCRIPTION_LENGTH = 20;
+    private static final int MAX_DESCRIPTION_LENGTH = 7000;
+    private static final int MIN_ANNOTATION_LENGTH = 20;
+    private static final int MAX_ANNOTATION_LENGTH = 2000;
+    private static final int MIN_TITLE_LENGTH = 3;
+    private static final int MAX_TITLE_LENGTH = 120;
+    private static final int HOURS_TO_EVENT_DATE_FROM_NOW_FOR_USER = 2;
+    private static final int HOURS_TO_EVENT_DATE_FROM_NOW_FOR_ADMIN = 1;
     private final EventRepository eventRepository;
     private final UserService userService;
     private final CategoryService categoryService;
@@ -52,9 +60,9 @@ public class EventService {
         if (event.getEventDate().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("EventDate cannot be in past.");
         }
-        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictException("Field: eventDate. Error: должно содержать дату, которая не раньше, чем через 2 часа." +
-                    "Value: " + event.getEventDate().format(FORMATTER));
+        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(HOURS_TO_EVENT_DATE_FROM_NOW_FOR_USER))) {
+            throw new ConflictException("Field: eventDate. Error: должно содержать дату, которая не раньше, чем через " +
+                    HOURS_TO_EVENT_DATE_FROM_NOW_FOR_USER + " часа. Value: " + event.getEventDate().format(FORMATTER));
         }
         Location location = LocationMapper.fromLocationDto(newEventDto.getLocation());
         location = locationRepository.save(location);
@@ -75,20 +83,20 @@ public class EventService {
         if (newEventDto.getRequestModeration() == null) {
             newEventDto.setRequestModeration(true);
         }
-        if (newEventDto.getDescription().length() < 20
-                || newEventDto.getDescription().length() > 7000) {
-            throw new BadRequestException("Description length must be between 20 and 7000. It is: " +
-                    newEventDto.getDescription().length());
+        if (newEventDto.getDescription().length() < MIN_DESCRIPTION_LENGTH
+                || newEventDto.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
+            throw new BadRequestException("Description length must be between " + MIN_DESCRIPTION_LENGTH + " and " +
+                    MAX_DESCRIPTION_LENGTH +". It is: " + newEventDto.getDescription().length());
         }
-        if (newEventDto.getAnnotation().length() < 20
-                || newEventDto.getAnnotation().length() > 2000) {
-            throw new BadRequestException("Annotation length must be between 20 and 2000. It is: " +
-                    newEventDto.getAnnotation().length());
+        if (newEventDto.getAnnotation().length() < MIN_ANNOTATION_LENGTH
+                || newEventDto.getAnnotation().length() > MAX_ANNOTATION_LENGTH) {
+            throw new BadRequestException("Annotation length must be between " + MIN_ANNOTATION_LENGTH + " and " +
+                    MAX_ANNOTATION_LENGTH +". It is: " + newEventDto.getAnnotation().length());
         }
-        if (newEventDto.getTitle().length() < 3
-                || newEventDto.getTitle().length() > 120) {
-            throw new BadRequestException("Title length must be between 3 and 120. It is: " +
-                    newEventDto.getTitle().length());
+        if (newEventDto.getTitle().length() < MIN_TITLE_LENGTH
+                || newEventDto.getTitle().length() > MAX_TITLE_LENGTH) {
+            throw new BadRequestException("Title length must be between " + MIN_TITLE_LENGTH + " and " +
+                    MAX_TITLE_LENGTH + ". It is: " + newEventDto.getTitle().length());
         }
     }
 
@@ -168,9 +176,9 @@ public class EventService {
             if (eventDate.isBefore(LocalDateTime.now())) {
                 throw new BadRequestException("EventDate cannot be in past.");
             }
-            if (eventDate.isBefore(LocalDateTime.now().plusHours(1))) {
-                throw new ConflictException("Field: eventDate. Error: должно содержать дату, которая не раньше, чем через 1 час." +
-                        "Value: " + eventDate.format(FORMATTER));
+            if (eventDate.isBefore(LocalDateTime.now().plusHours(HOURS_TO_EVENT_DATE_FROM_NOW_FOR_ADMIN))) {
+                throw new ConflictException("Field: eventDate. Error: должно содержать дату, которая не раньше, чем через " +
+                        HOURS_TO_EVENT_DATE_FROM_NOW_FOR_ADMIN + " час. Value: " + eventDate.format(FORMATTER));
             }
             oldEvent.setEventDate(eventDate);
         }
@@ -201,9 +209,9 @@ public class EventService {
             if (eventDate.isBefore(LocalDateTime.now())) {
                 throw new BadRequestException("EventDate cannot be in past.");
             }
-            if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new ConflictException("Field: eventDate. Error: должно содержать дату, которая не раньше, чем через 2 часа." +
-                        "Value: " + eventDate.format(FORMATTER));
+            if (eventDate.isBefore(LocalDateTime.now().plusHours(HOURS_TO_EVENT_DATE_FROM_NOW_FOR_USER))) {
+                throw new ConflictException("Field: eventDate. Error: должно содержать дату, которая не раньше, чем через " +
+                        HOURS_TO_EVENT_DATE_FROM_NOW_FOR_USER + " часа. Value: " + eventDate.format(FORMATTER));
             }
             oldEvent.setEventDate(eventDate);
         }
@@ -253,20 +261,20 @@ public class EventService {
     }
 
     private void validateUpdateFieldsLength(UpdateEventRequest updateEventDto) {
-        if (updateEventDto.getDescription() != null && (updateEventDto.getDescription().length() < 20
-                || updateEventDto.getDescription().length() > 7000)) {
-            throw new BadRequestException("Description length must be between 20 and 7000. It is: " +
-                    updateEventDto.getDescription().length());
+        if (updateEventDto.getDescription() != null && (updateEventDto.getDescription().length() < MIN_DESCRIPTION_LENGTH
+                || updateEventDto.getDescription().length() > MAX_DESCRIPTION_LENGTH)) {
+            throw new BadRequestException("Description length must be between " + MIN_DESCRIPTION_LENGTH + " and " +
+                    MAX_DESCRIPTION_LENGTH +". It is: " + updateEventDto.getDescription().length());
         }
-        if (updateEventDto.getAnnotation() != null && (updateEventDto.getAnnotation().length() < 20
-                || updateEventDto.getAnnotation().length() > 2000)) {
-            throw new BadRequestException("Annotation length must be between 20 and 2000. It is: " +
-                    updateEventDto.getAnnotation().length());
+        if (updateEventDto.getAnnotation() != null && (updateEventDto.getAnnotation().length() < MIN_ANNOTATION_LENGTH
+                || updateEventDto.getAnnotation().length() > MAX_ANNOTATION_LENGTH)) {
+            throw new BadRequestException("Annotation length must be between " + MIN_ANNOTATION_LENGTH + " and " +
+                    MAX_ANNOTATION_LENGTH +". It is: " + updateEventDto.getAnnotation().length());
         }
-        if (updateEventDto.getTitle() != null && (updateEventDto.getTitle().length() < 3
-                || updateEventDto.getTitle().length() > 120)) {
-            throw new BadRequestException("Title length must be between 3 and 120. It is: " +
-                    updateEventDto.getTitle().length());
+        if (updateEventDto.getTitle() != null && (updateEventDto.getTitle().length() < MIN_TITLE_LENGTH
+                || updateEventDto.getTitle().length() > MAX_TITLE_LENGTH)) {
+            throw new BadRequestException("Title length must be between " + MIN_TITLE_LENGTH + " and " +
+                    MAX_TITLE_LENGTH + ". It is: " + updateEventDto.getTitle().length());
         }
     }
 
@@ -275,8 +283,10 @@ public class EventService {
         List<Event> events = eventRepository.findByInitiatorIdFromLimit(userId, from, size);
         Map<Integer, Long> views = findViewsForEvents(events);
         return events.stream().map(EventMapper::toEventShortDto)
-                .peek(event -> event.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(event.getId())))
-                .peek(eventShortDto -> eventShortDto.setViews(views.get(eventShortDto.getId())))
+                .peek(event -> {
+                    event.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(event.getId()));
+                    event.setViews(views.get(event.getId()));
+                })
                 .toList();
     }
 
@@ -308,7 +318,6 @@ public class EventService {
                 throw new BadRequestException("Cannot parse RangeStart");
             }
         }
-
         LocalDateTime end = LocalDateTime.now().plusYears(10);
         if (rangeEnd != null && !rangeEnd.isBlank()) {
             try {
@@ -317,21 +326,17 @@ public class EventService {
                 throw new BadRequestException("Cannot parse RangeEnd");
             }
         }
-
         if (!start.isBefore(end)) {
             throw new BadRequestException("RangeStart must be after RangeEnd");
         }
-
         if (!sort.equals(String.valueOf(Sort.EVENT_DATE)) && !sort.equals(String.valueOf(Sort.VIEWS))) {
             throw new BadRequestException("Unknown sort :" + sort);
         }
-
         Specification<Event> specification = eventSpecification.buildPublicSpecification(text,
                 categories,
                 paid,
                 start,
                 end);
-
         List<Event> events = eventRepository.findAll(specification, PageRequest.of(from, size)).getContent();
         if (onlyAvailable != null && onlyAvailable) {
             for (Event event : events) {
@@ -344,8 +349,10 @@ public class EventService {
         Map<Integer, Long> views = findViewsForEvents(events);
         List<EventShortDto> result = new ArrayList<>(events.stream()
                 .map(EventMapper::toEventShortDto)
-                .peek(event -> event.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(event.getId())))
-                .peek(eventShortDto -> eventShortDto.setViews(views.get(eventShortDto.getId())))
+                .peek(event -> {
+                    event.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(event.getId()));
+                    event.setViews(views.get(event.getId()));
+                })
                 .toList());
 
         if (sort.equals(String.valueOf(Sort.EVENT_DATE))) {
@@ -353,7 +360,6 @@ public class EventService {
         } else {
             result.sort(Comparator.comparing(EventShortDto::getViews).reversed());
         }
-
         return result;
     }
 
@@ -372,7 +378,6 @@ public class EventService {
                 throw new BadRequestException("Cannot parse RangeStart");
             }
         }
-
         LocalDateTime end = LocalDateTime.now().plusYears(10);
         if (rangeEnd != null && !rangeEnd.isBlank()) {
             try {
@@ -381,24 +386,22 @@ public class EventService {
                 throw new BadRequestException("Cannot parse RangeEnd");
             }
         }
-
         if (!start.isBefore(end)) {
             throw new BadRequestException("RangeStart must be after RangeEnd");
         }
-
         Specification<Event> specification = eventSpecification.buildAdminSpecification(users,
                                                                                         states,
                                                                                         categories,
                                                                                         start,
                                                                                         end);
-
         List<Event> events = eventRepository.findAll(specification, PageRequest.of(from, size)).getContent();
-
         Map<Integer, Long> views = findViewsForEvents(events);
         return events.stream()
                 .map(EventMapper::toEventFullDto)
-                .peek(event -> event.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(event.getId())))
-                .peek(eventShortDto -> eventShortDto.setViews(views.get(eventShortDto.getId())))
+                .peek(event -> {
+                    event.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(event.getId()));
+                    event.setViews(views.get(event.getId()));
+                })
                 .toList();
     }
 }

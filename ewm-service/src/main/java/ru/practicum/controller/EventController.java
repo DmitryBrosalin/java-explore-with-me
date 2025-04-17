@@ -13,9 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class EventController {
-
-private static final String APP_NAME = "ewm-main-service";
-
+    private static final String APP_NAME = "ewm-main-service";
     private final EventService eventService;
 
     @GetMapping("/admin/events")

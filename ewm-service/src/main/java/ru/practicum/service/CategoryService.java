@@ -17,6 +17,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
+    private static final int MAX_CATEGORY_NAME_LENGTH = 50;
     private final CategoryRepository categoryRepository;
 
     public CategoryDto addCategory(CategoryDto categoryDto) {
@@ -26,9 +27,7 @@ public class CategoryService {
             throw new ConflictException("Category named: " + categoryDto.getName() + " already exists.");
         }
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
-
     }
-
 
     public CategoryDto getCategory(int id) {
         Optional<Category> category = categoryRepository.findById(id);
@@ -64,8 +63,9 @@ public class CategoryService {
     public CategoryDto updateCategory(int id, CategoryDto categoryDto) {
         validateCategory(id);
         if (categoryDto.getName() != null
-            && categoryDto.getName().length() > 50) {
-            throw new BadRequestException("Category name cannot be greater than 50. It is: " + categoryDto.getName().length());
+            && categoryDto.getName().length() > MAX_CATEGORY_NAME_LENGTH) {
+            throw new BadRequestException("Category name cannot be greater than " + MAX_CATEGORY_NAME_LENGTH +
+                    ". It is: " + categoryDto.getName().length());
         }
         Category category = CategoryMapper.fromCategoryDto(categoryDto);
         category.setId(id);
@@ -88,8 +88,9 @@ public class CategoryService {
         if (categoryDto.getName() == null || categoryDto.getName().isBlank()) {
             throw new BadRequestException("Category name cannot be null or empty");
         }
-        if (categoryDto.getName().length() > 50) {
-            throw new BadRequestException("Category name cannot be greater than 50. It is: " + categoryDto.getName().length());
+        if (categoryDto.getName().length() > MAX_CATEGORY_NAME_LENGTH) {
+            throw new BadRequestException("Category name cannot be greater than " + MAX_CATEGORY_NAME_LENGTH +
+                    ". It is: " + categoryDto.getName().length());
         }
     }
 }

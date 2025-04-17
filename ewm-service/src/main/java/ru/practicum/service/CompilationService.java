@@ -19,6 +19,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class CompilationService {
+    private static final int MAX_COMPILATION_TITLE_LENGTH = 50;
     private final CompilationRepository compilationRepository;
     private final CompilationEventRepository compilationEventRepository;
     private final EventService eventService;
@@ -73,9 +74,9 @@ public class CompilationService {
 
     public CompilationResponseDto updateCompilation(int id, CompilationRequestDto compilationRequestDto) {
         if (compilationRequestDto.getTitle() != null
-            && compilationRequestDto.getTitle().length() > 50) {
-            throw new BadRequestException("Compilation title cannot be greater than 50. It is: " +
-                    compilationRequestDto.getTitle().length());
+            && compilationRequestDto.getTitle().length() > MAX_COMPILATION_TITLE_LENGTH) {
+            throw new BadRequestException("Compilation title cannot be greater than " + MAX_COMPILATION_TITLE_LENGTH +
+                    ". It is: " + compilationRequestDto.getTitle().length());
         }
         Compilation oldCompilation = findCompilation(id);
         if (compilationRequestDto.getPinned() != null) {
@@ -118,9 +119,9 @@ public class CompilationService {
         if (compilationRequestDto.getTitle() == null || compilationRequestDto.getTitle().isBlank()) {
             throw new BadRequestException("Compilation title cannot be null or empty");
         }
-        if (compilationRequestDto.getTitle().length() > 50) {
-            throw new BadRequestException("Compilation title cannot be greater than 50. It is: " +
-                    compilationRequestDto.getTitle().length());
+        if (compilationRequestDto.getTitle().length() > MAX_COMPILATION_TITLE_LENGTH) {
+            throw new BadRequestException("Compilation title cannot be greater than " + MAX_COMPILATION_TITLE_LENGTH +
+                    ". It is: " + compilationRequestDto.getTitle().length());
         }
     }
 }

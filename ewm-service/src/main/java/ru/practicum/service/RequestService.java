@@ -91,9 +91,11 @@ public class RequestService {
         Status status = eventRequestStatusUpdateRequest.getStatus();
         List<RequestDto> result = eventRequestStatusUpdateRequest.getRequestIds().stream()
                 .map(this::findRequest)
-                .peek(this::checkParticipantLimit)
-                .peek(request -> request.setStatus(status))
-                .peek(requestRepository::save)
+                .peek(request -> {
+                    checkParticipantLimit(request);
+                    request.setStatus(status);
+                    requestRepository.save(request);
+                })
                 .map(RequestMapper::toRequestDto)
                 .toList();
         if (status.equals(Status.CONFIRMED)) {
