@@ -86,12 +86,12 @@ public class EventService {
         if (newEventDto.getDescription().length() < MIN_DESCRIPTION_LENGTH
                 || newEventDto.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
             throw new BadRequestException("Description length must be between " + MIN_DESCRIPTION_LENGTH + " and " +
-                    MAX_DESCRIPTION_LENGTH +". It is: " + newEventDto.getDescription().length());
+                    MAX_DESCRIPTION_LENGTH + ". It is: " + newEventDto.getDescription().length());
         }
         if (newEventDto.getAnnotation().length() < MIN_ANNOTATION_LENGTH
                 || newEventDto.getAnnotation().length() > MAX_ANNOTATION_LENGTH) {
             throw new BadRequestException("Annotation length must be between " + MIN_ANNOTATION_LENGTH + " and " +
-                    MAX_ANNOTATION_LENGTH +". It is: " + newEventDto.getAnnotation().length());
+                    MAX_ANNOTATION_LENGTH + ". It is: " + newEventDto.getAnnotation().length());
         }
         if (newEventDto.getTitle().length() < MIN_TITLE_LENGTH
                 || newEventDto.getTitle().length() > MAX_TITLE_LENGTH) {
@@ -264,12 +264,12 @@ public class EventService {
         if (updateEventDto.getDescription() != null && (updateEventDto.getDescription().length() < MIN_DESCRIPTION_LENGTH
                 || updateEventDto.getDescription().length() > MAX_DESCRIPTION_LENGTH)) {
             throw new BadRequestException("Description length must be between " + MIN_DESCRIPTION_LENGTH + " and " +
-                    MAX_DESCRIPTION_LENGTH +". It is: " + updateEventDto.getDescription().length());
+                    MAX_DESCRIPTION_LENGTH + ". It is: " + updateEventDto.getDescription().length());
         }
         if (updateEventDto.getAnnotation() != null && (updateEventDto.getAnnotation().length() < MIN_ANNOTATION_LENGTH
                 || updateEventDto.getAnnotation().length() > MAX_ANNOTATION_LENGTH)) {
             throw new BadRequestException("Annotation length must be between " + MIN_ANNOTATION_LENGTH + " and " +
-                    MAX_ANNOTATION_LENGTH +". It is: " + updateEventDto.getAnnotation().length());
+                    MAX_ANNOTATION_LENGTH + ". It is: " + updateEventDto.getAnnotation().length());
         }
         if (updateEventDto.getTitle() != null && (updateEventDto.getTitle().length() < MIN_TITLE_LENGTH
                 || updateEventDto.getTitle().length() > MAX_TITLE_LENGTH)) {
