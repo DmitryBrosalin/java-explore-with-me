@@ -34,7 +34,7 @@ public interface StatsRepository extends JpaRepository<Hit, Integer> {
             "ORDER BY count(h.id) DESC")
     List<StatsDto> findStatsByUriAndStartAndEndUnique(List<String> uri, LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT new ru.practicum.StatsDto(h.app, h.uri, count(DISTINCT h.id)) " +
+    @Query("SELECT new ru.practicum.StatsDto(h.app, h.uri, count(DISTINCT h.ip)) " +
             "FROM Hit AS h " +
             "WHERE h.timestamp BETWEEN ?1 AND ?2 " +
             "GROUP BY h.app, h.uri " +

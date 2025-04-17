@@ -1,6 +1,10 @@
+package ru.practicum;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -10,32 +14,34 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class StatsClient {
-    protected final RestTemplate rest;
+    private final RestTemplate rest = new RestTemplate();
 
     public ResponseEntity<Object> postHit(HitDto hitDto) {
-        return makeAndSendRequest(HttpMethod.POST, "/hit", null, hitDto);
+        return makeAndSendRequest(HttpMethod.POST, "http://localhost:9090/hit", hitDto);
     }
 
     public ResponseEntity<Object> getStats(String start,
                                            String end,
                                            List<String> uris,
                                            Boolean unique) {
-        Map<String, Object> parameters = Map.of("start", start, "end", end, "uris", uris, "unique", unique);
-        return makeAndSendRequest(HttpMethod.GET, "/stats", parameters, null);
+        StringBuilder path = new StringBuilder("http://localhost:9090/stats?start=" + start + "&end=" + end);
+        if (uris != null) {
+            for (String uri : uris) {
+                path.append("&uri=").append(uri);
+            }
+        }
+        if (unique != null) {
+            path.append("&unique=").append(unique);
+        }
+        return makeAndSendRequest(HttpMethod.GET, path.toString(), null);
     }
 
-    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path,
-                                                          @Nullable Map<String, Object> parameters, @Nullable T body) {
+    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable T body) {
         HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
         ResponseEntity<Object> responseEntity;
         try {
-            if (parameters != null) {
-                responseEntity = rest.exchange(path, method, requestEntity, Object.class, parameters);
-            } else {
-                responseEntity = rest.exchange(path, method, requestEntity, Object.class);
-            }
+            responseEntity = rest.exchange(path, method, requestEntity, Object.class);
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
         }
