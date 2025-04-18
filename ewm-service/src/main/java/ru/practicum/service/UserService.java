@@ -34,7 +34,7 @@ public class UserService {
 
     public User findUser(int userId) {
         if (userRepository.findById(userId).isEmpty()) {
-            throw new NotFoundException("User with id=" + userId + "was not found");
+            throw new NotFoundException("User with id=" + userId + " was not found");
         } else {
             return userRepository.findById(userId).get();
         }
@@ -42,7 +42,7 @@ public class UserService {
 
     public void deleteUser(int userId) {
         if (userRepository.findById(userId).isEmpty()) {
-            throw new NotFoundException("User with id=" + userId + "was not found");
+            throw new NotFoundException("User with id=" + userId + " was not found");
         }
         userRepository.deleteById(userId);
     }
