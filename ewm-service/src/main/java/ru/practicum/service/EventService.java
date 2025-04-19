@@ -43,6 +43,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final CommentService commentService;
     private final LocationRepository locationRepository;
     private final RequestRepository requestRepository;
     private final StatsClient statsClient;
@@ -71,7 +72,7 @@ public class EventService {
         event.setLocation(location);
         event.setCreatedOn(LocalDateTime.now());
         event.setState(State.PENDING);
-        return EventMapper.toEventFullDto(eventRepository.save(event));
+        return prepareEventFullDtoForResponse(eventRepository.save(event));
     }
 
     private void validateNewEvent(NewEventDto newEventDto) {
@@ -111,9 +112,14 @@ public class EventService {
                 .uri(request.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build());
+        return prepareEventFullDtoForResponse(event);
+    }
+
+    private EventFullDto prepareEventFullDtoForResponse(Event event) {
         EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
-        eventFullDto.setViews(findViewsForEvents(List.of(event)).get(eventId));
-        eventFullDto.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(eventId));
+        eventFullDto.setViews(findViewsForEvents(List.of(event)).get(event.getId()));
+        eventFullDto.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(event.getId()));
+        eventFullDto.setComments(commentService.getAllCommentsForEvent(event.getId()));
         return eventFullDto;
     }
 
@@ -161,11 +167,7 @@ public class EventService {
 
     public EventFullDto getEventForUser(int userId, int eventId) {
         userService.findUser(userId);
-        Event event = findEvent(eventId);
-        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
-        eventFullDto.setViews(findViewsForEvents(List.of(event)).get(eventId));
-        eventFullDto.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(eventId));
-        return eventFullDto;
+        return prepareEventFullDtoForResponse(findEvent(eventId));
     }
 
     public EventFullDto updateEventByAdmin(int eventId, UpdateEventRequest updateEventRequest) {
@@ -183,18 +185,18 @@ public class EventService {
             oldEvent.setEventDate(eventDate);
         }
         if (updateEventRequest.getStateAction() == null) {
-            return EventMapper.toEventFullDto(eventRepository.save(oldEvent));
+            return prepareEventFullDtoForResponse(eventRepository.save(oldEvent));
         } else if (updateEventRequest.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
             if (oldEvent.getState().equals(State.PENDING)) {
                 oldEvent.setState(State.PUBLISHED);
                 oldEvent.setPublishedOn(LocalDateTime.now());
-                return EventMapper.toEventFullDto(eventRepository.save(oldEvent));
+                return prepareEventFullDtoForResponse(eventRepository.save(oldEvent));
             } else {
                 throw new ConflictException("Cannot publish the event because it's not in the right state: " + oldEvent.getState());
             }
         } else if (updateEventRequest.getStateAction().equals(StateAction.REJECT_EVENT)) {
             oldEvent.setState(State.CANCELED);
-            return EventMapper.toEventFullDto(eventRepository.save(oldEvent));
+            return prepareEventFullDtoForResponse(eventRepository.save(oldEvent));
         } else {
             throw new BadRequestException("Forbidden Admin State Action value: " + updateEventRequest.getStateAction());
         }
@@ -216,17 +218,17 @@ public class EventService {
             oldEvent.setEventDate(eventDate);
         }
         if (updateEventRequest.getStateAction() == null) {
-            return EventMapper.toEventFullDto(eventRepository.save(oldEvent));
+            return prepareEventFullDtoForResponse(eventRepository.save(oldEvent));
         } else if (updateEventRequest.getStateAction().equals(StateAction.SEND_TO_REVIEW)) {
             if (oldEvent.getState().equals(State.PENDING) || oldEvent.getState().equals(State.CANCELED)) {
                 oldEvent.setState(State.PENDING);
-                return EventMapper.toEventFullDto(eventRepository.save(oldEvent));
+                return prepareEventFullDtoForResponse(eventRepository.save(oldEvent));
             } else {
                 throw new ConflictException("Cannot update the event because it's not in the right state: " + oldEvent.getState());
             }
         } else if (updateEventRequest.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
             oldEvent.setState(State.CANCELED);
-            return EventMapper.toEventFullDto(eventRepository.save(oldEvent));
+            return prepareEventFullDtoForResponse(eventRepository.save(oldEvent));
         } else {
             throw new BadRequestException("Forbidden User State Action value: " + updateEventRequest.getStateAction());
         }
@@ -397,11 +399,7 @@ public class EventService {
         List<Event> events = eventRepository.findAll(specification, PageRequest.of(from, size)).getContent();
         Map<Integer, Long> views = findViewsForEvents(events);
         return events.stream()
-                .map(EventMapper::toEventFullDto)
-                .peek(event -> {
-                    event.setConfirmedRequests(requestRepository.countConfirmedRequestsForEvent(event.getId()));
-                    event.setViews(views.get(event.getId()));
-                })
+                .map(this::prepareEventFullDtoForResponse)
                 .toList();
     }
 }
