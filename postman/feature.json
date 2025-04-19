@@ -1771,7 +1771,7 @@
 											"    });",
 											"",
 											"    pm.test(\"Данные в ответе должны быть полными\", function () {",
-											"    pm.expect(target.id).equal(pm.collectionVariables.get(\"commId\"));",
+											"    pm.expect(target.id).equal(pm.collectionVariables.get(\"commId\").toString());",
 											"    pm.expect(target.created).to.not.be.null;",
 											"    pm.expect(target.authorName).equal(pm.collectionVariables.get(\"lastCommentAuthorName\"));",
 											"    pm.expect(target.text).equal(pm.collectionVariables.get(\"lastCommentText\"));",
@@ -2068,7 +2068,7 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"pm.collectionVariables.set(\"commId\", pm.collectionVariables.get(\"commId\") + 1)"
+											"pm.collectionVariables.set('commId', pm.collectionVariables.get('commId') + 1)"
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -2824,7 +2824,7 @@
 											"});",
 											"",
 											"pm.test(\"Данные в ответе должны соответствовать данным из базы\", function () {",
-											"    pm.expect(target.comments[0].id).equal(source.id, 'Id комментария должен соответствовать сохраненному');",
+											"    pm.expect(target.comments[0].id).equal(source.id.toString(), 'Id комментария должен соответствовать сохраненному');",
 											"    pm.expect(target.comments[0].text).equal(source.text, 'Текст комментария должен соответствовать сохраненному');",
 											"    pm.expect(target.comments[0].autorName).equal(source.autorName, 'Имя автора комментария должно соответствовать сохраненному');",
 											"    pm.expect(target.comments[0].created).equal(source.created, 'Время создания комментария должно соответствовать сохраненному');",
@@ -2878,7 +2878,7 @@
 											"});",
 											"",
 											"pm.test(\"Данные в ответе должны соответствовать данным из базы\", function () {",
-											"    pm.expect(target.comments[0].id).equal(source.id, 'Id комментария должен соответствовать сохраненному');",
+											"    pm.expect(target.comments[0].id).equal(source.id.toString(), 'Id комментария должен соответствовать сохраненному');",
 											"    pm.expect(target.comments[0].text).equal(source.text, 'Текст комментария должен соответствовать сохраненному');",
 											"    pm.expect(target.comments[0].autorName).equal(source.autorName, 'Имя автора комментария должно соответствовать сохраненному');",
 											"    pm.expect(target.comments[0].created).equal(source.created, 'Время создания комментария должно соответствовать сохраненному');",
